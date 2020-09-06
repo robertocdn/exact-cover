@@ -1,24 +1,31 @@
 package models;
 
+import java.util.ArrayList;
+
 public class SubSet {
     private int[] values;
-    private boolean used;
+    ArrayList<SubSet> pairs = new ArrayList<SubSet>();
+    private boolean[] usedValues;
 
-    public SubSet(int[] values) {
+    public SubSet(int[] values, int usedValuesLength) {
         this.values = values;
-        this.used = false; 
+        this.usedValues = new boolean[usedValuesLength];
     }
 
     public int[] getValues() {
         return values;
     }
 
-    public boolean isUsed() {
-        return used;
+    public boolean[] getUsedValues() {
+        return usedValues;
     }
 
-    public void setUsed(boolean used) {
-        this.used = used;
+    public void addPair(SubSet pair) {
+        this.pairs.add(pair);
+    }
+
+    public ArrayList<SubSet> getPairs() {
+        return pairs;
     }
     
 }

@@ -32,7 +32,7 @@ public class FileParser {
                             dataInt[i] = Integer.parseInt(data[i]);
                         }
 
-                        SubSet subSet = new SubSet(dataInt);
+                        SubSet subSet = new SubSet(dataInt, takenNumbers.length);
 
                         subSets.add(subSet);
                     }

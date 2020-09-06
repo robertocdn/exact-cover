@@ -14,6 +14,32 @@ public class Main {
         int round = 0;
         int tries = 100;
 
+
+        for (SubSet subSet : subSets) {
+            for (SubSet otherSubSet : subSets) {
+                boolean flag = true;
+                for (int value : subSet.getValues()) {
+                    for (int otherValue : otherSubSet.getValues()) {
+                        if(value == otherValue) {
+                            flag = false;
+                        }
+                    }
+                }
+                if(flag == true) {
+                    subSet.addPair(otherSubSet);
+                }
+            }
+        }
+
+        for (SubSet subSet : subSets) {
+            for (int value: subSet.getValues()) {
+                subSet.getUsedValues()[value] = true;
+            }
+            for (int i = 0; i < subSet.getPairs().size(); i++) {
+                a(subSet);
+            }
+        }
+/*
         do {
 
             resultFound = true;
@@ -43,7 +69,6 @@ public class Main {
                     for (int value : subSetValues) {
                         takenNumbers[value] = true;
                     }
-                    subSet.setUsed(true);
                     usedSubSets.add(subSet);
                 }
 
@@ -80,5 +105,42 @@ public class Main {
         } else {
             System.out.println("No Result found in " + tries + "tries");
         }
+        */
+    }
+
+    public static void a (SubSet subSet) {
+        
+
+        boolean[] used = subSet.getUsedValues().clone();
+        
+        for (int i = 0; i < subSet.getPairs().size(); i++) {
+            boolean flag = true;
+            SubSet s  = (SubSet)subSet.getPairs().toArray()[i];
+            for (int j : s.getValues()) {
+                if(used[j] == true) {
+                    flag = false;
+                }
+            }
+
+            if (flag == true) {
+                for (int j : s.getValues()) {
+                    used[j] = true;
+                } 
+           
+            }
+
+           a(subSet);
+        }
+
+        boolean result = true;
+        for (boolean b : used) {
+            if(b == false) {
+                result = false;
+            }
+        }
+
+         if (result == true) {
+            System.out.println("Result found");
+         }
     }
 }
