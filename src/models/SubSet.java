@@ -27,5 +27,9 @@ public class SubSet {
     public ArrayList<SubSet> getPairs() {
         return pairs;
     }
+
+    public void setPairs(ArrayList<SubSet> pairs) {
+        this.pairs = pairs;
+    }
     
 }

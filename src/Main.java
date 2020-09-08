@@ -1,19 +1,23 @@
 import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import models.*;
 import parsers.*;
 
 public class Main {
+
+    private static ArrayList<SubSet> usedSubSets = new ArrayList<SubSet>();
+    private static boolean done = false;
     public static void main(String[] args) {
         ArrayList<SubSet> subSets = new ArrayList<SubSet>();
-        ArrayList<SubSet> usedSubSets = new ArrayList<SubSet>();
         LinkedList<SubSet> queue = new LinkedList<SubSet>();
         boolean[] takenNumbers = FileParser.toData("/workspace/exact-cover/src/data/exact.txt", subSets);
         boolean resultFound;
         int round = 0;
         int tries = 100;
 
+        Collections.sort(subSets, (subSet1, subSet2) -> Integer.compare(subSet2.getValues().length, subSet1.getValues().length));
 
         for (SubSet subSet : subSets) {
             for (SubSet otherSubSet : subSets) {
@@ -25,18 +29,24 @@ public class Main {
                         }
                     }
                 }
-                if(flag == true) {
+                if(flag == true) {                    
                     subSet.addPair(otherSubSet);
                 }
             }
         }
 
         for (SubSet subSet : subSets) {
+            usedSubSets.add(subSet);
             for (int value: subSet.getValues()) {
                 subSet.getUsedValues()[value] = true;
             }
-            for (int i = 0; i < subSet.getPairs().size(); i++) {
-                a(subSet);
+
+            recursiveSearch(subSet, 0);
+            
+            usedSubSets.clear();
+
+            if(done == true) {
+                break;
             }
         }
 /*
@@ -108,39 +118,62 @@ public class Main {
         */
     }
 
-    public static void a (SubSet subSet) {
+    public static void recursiveSearch (SubSet subSet, int start) {
         
+        boolean[] used = subSet.getUsedValues();
+        boolean loop = true;
+        int count = start;
+     
+        if(start != subSet.getPairs().size() && subSet.getPairs().size() > 0) {
+            int end = start == 0 ?  subSet.getPairs().size() : start;
+            while(loop == true) {
+                boolean flag = true;
+                SubSet s  = (SubSet)subSet.getPairs().toArray()[count];
+                for (int j : s.getValues()) {
+                    if(used[j] == true) {
+                        flag = false;
+                    }
+                }
 
-        boolean[] used = subSet.getUsedValues().clone();
-        
-        for (int i = 0; i < subSet.getPairs().size(); i++) {
-            boolean flag = true;
-            SubSet s  = (SubSet)subSet.getPairs().toArray()[i];
-            for (int j : s.getValues()) {
-                if(used[j] == true) {
-                    flag = false;
+                if (flag == true) {
+                    for (int j : s.getValues()) {
+                        used[j] = true;
+                    } 
+                    usedSubSets.add(s);
+                }
+
+                if(count == subSet.getPairs().size() - 1 && start != 0) {
+                    count = 0;
+                } else if(count == end - 1) {
+                    loop = false; 
+                } else {
+                    count++;
+                }
+                
+            }
+
+            boolean result = true;
+            for (boolean b : used) {
+                if(b == false) {
+                    result = false;
                 }
             }
 
-            if (flag == true) {
-                for (int j : s.getValues()) {
-                    used[j] = true;
-                } 
-           
+            if (result == true) {
+                System.out.println("Result found: ");
+                System.out.println("Used Subsets: ");
+                for (SubSet usedSubSet : usedSubSets) {
+                    System.out.print("{ ");
+                    for (int value : usedSubSet.getValues()) {
+                        System.out.print(value + ",");
+                    }
+                    System.out.println("}");
+                }
+                done = true; 
+            } else {
+                 recursiveSearch(subSet, start + 1);
             }
-
-           a(subSet);
         }
-
-        boolean result = true;
-        for (boolean b : used) {
-            if(b == false) {
-                result = false;
-            }
-        }
-
-         if (result == true) {
-            System.out.println("Result found");
-         }
+       
     }
 }
